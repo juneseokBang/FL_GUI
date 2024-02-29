@@ -8,15 +8,15 @@ This project aims to provide a user-friendly interface for Federated Learning (F
 To use this project, follow these steps:
 
 1. Clone the repository:
-   '''
-   git clone https://github.com/your-username/FL_GUI.git
-   cd FL_GUI
-   '''
+```
+git clone https://github.com/your-username/FL_GUI.git
+cd FL_GUI
+```
 
 3. Start the Flask server to send and receive parameter values:
-  '''
-  python app.py
-  '''
+```
+python app.py
+```
 
 3. Once the server is running, you can access the GUI by opening your web browser and navigating to 'http://localhost:5000'.
 

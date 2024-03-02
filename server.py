@@ -151,12 +151,6 @@ class Server(object):
     def run(self, round=0):
         rounds = self.config.rounds
         target_accuracy = self.config.target_accuracy
-        # self.optimal_v_n = [1.0 for _ in range(self.config.num_clients)]
-        # logging.info('Training: {} rounds\n'.format(rounds))
-
-        # for round in range(rounds):
-        #     logging.info('**** Round {}/{} ****'.format(round+1, rounds))
-        #     accuracy = self.fl_round(round)
         
         logging.info('**** Round {}/{} ****'.format(round+1, rounds))
         accuracy = self.fl_round(round)
@@ -205,11 +199,6 @@ class Server(object):
         accuracy = updateModel.test(self.model, testloader)
 
         logging.info('Global model accuracy: {:.2f}%'.format(100 * accuracy))
-        # self.file_logger.info("{0}_{1:.2f}_{2:.3f}_{3}_{4}".format(curr_round, 
-        #                                                                100*accuracy, 
-        #                                                                time.time()-start_time_epochs, 
-        #                                                                int(self.parameters["D_n"][0]),
-        #                                                                vn))
         self.file_logger.info("{0}_{1}".format(curr_round, 100*accuracy))
         print()
 

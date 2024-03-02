@@ -14,9 +14,7 @@ def init_param_hetero(constant, n, t):
 
     # Scaling factors for unit conversion
     scale_bandwidth = 1e6  # Convert MHz to Hz
-    # scale_power = 1e-3  # Convert mW to W
     scale_MB_to_bit = 8 * 1e6 # Convert MB to bit
-    # scale_nats_to_bit = 1e-9 * 8 * 1e6 # Convert nats to bit
     
     for i in range(constant['number_of_clients']):
         # d_i = random.randrange(0, 1) # 0만 나옴
@@ -27,14 +25,11 @@ def init_param_hetero(constant, n, t):
         parameters["Gamma"][i] = constant["Gamma"]
         parameters["local_iter"][i] = constant["local_iter"]
         parameters["c_n"][i] = constant["c_n"]
-        # parameters["frequency_n"][i] = constant["frequency_n_GHz"][f_i] * scale_bandwidth * 1e3
         parameters["frequency_n"][i] = constant["frequency_n_GHz"][f_i]
-        # parameters["weight_size_n"][i] = constant["weight_size_n_kbit"] * 1e3
         parameters["weight_size_n"][i] = constant["weight_size_n_kbit"]
 
         # Calculate R
         parameters["number_of_clients"] = constant["number_of_clients"]
-        # parameters["bandwidth"][i] = constant["bandwidth_MHz"] * scale_bandwidth
         parameters["bandwidth"][i] = constant["bandwidth_MHz"]
         parameters["channel_gain_n"][i] = constant["channel_gain_n"]
         parameters["transmission_power_n"][i] = constant["transmission_power_n"][t_i]
@@ -72,11 +67,6 @@ def block_coordinate_descent(parameters, round, t):
                      parameters['transmission_rate'][i] <= t
         ]
         constraints += block_constraints
-
-
-    # 목적 함수 최소화 문제 설정
-    # objective = cp.Minimize(objective_function(v_n, t))
-    # problem = cp.Problem(objective, constraints)
     
     t_optimal = t
     # Block coordinate descent 반복
@@ -86,15 +76,11 @@ def block_coordinate_descent(parameters, round, t):
     sol_list = []
 
     # Solve the optimization problem using block coordinate descent
-    # for r in tqdm(range(round)):
     for _ in range(max_iter):  # Set the desired number of iterations
-        # v_n에 대한 최적화 (t를 상수로 고정)
         v_n_objective = cp.Minimize(objective_function(v_n, t_optimal, round, parameters))
         v_n_problem = cp.Problem(v_n_objective, constraints)
         v_n_problem.solve(qcp=True, solver=cp.ECOS)
         v_n_optimal = v_n.value
-        # print(v_n.value)
-        # y에 대한 최적화 (x를 상수로 고정)
         max_t = []
         for i in range(n):
             tmp = [parameters['local_iter'][i] * parameters['c_n'][i] * v_n_optimal[i] *\
@@ -103,29 +89,10 @@ def block_coordinate_descent(parameters, round, t):
             max_t += tmp
 
         t_optimal = max(max_t)
-        # print(t_optimal)
-        
-        # 수렴 확인
-        # sol_objective = cp.Minimize(objective_function(v_n_optimal, t_optimal, r))
-        # sol_problem = cp.Problem(sol_objective, constraints)
-        # sol = sol_problem.solve(solver=cp.ECOS)
         sol = result_function(v_n_optimal, t_optimal, round, parameters)
 
-        # if np.abs(pre_sol - sol) < tolerance:
-        #     pre_sol = sol
-        #     print(sol)
-        #     print(v_n_optimal)
-        #     break
-        # pre_sol = sol
-        
-    # print(sol)
     sol_list.append(sol)
     v_n_optimal = [float(x) for x in v_n_optimal]
-    # print(v_n_optimal)
-    # Retrieve the optimal values
-    # optimal_v_n = v_n.value
-    # print(optimal_v_n)
-
 
     return v_n_optimal, sol_list, t_optimal
 

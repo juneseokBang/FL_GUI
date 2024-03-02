@@ -68,46 +68,41 @@ class Client(object):
     def adm_algorithm_1(self, vn):
         self.label_number = []
         trainset = []
+        delta = 1
         vn = float(round(vn, 2))
-        # print(vn)
 
         # 각 값의 길이를 알아내기
         # 값의 개수의 합 계산
         total_values_count = sum(len(value) for value in self.number_data.values())
-        # print(total_values_count)
+
+        reduction = [0 for c in range(10)]
 
         # 값의 개수가 가장 많은 키 찾기
         sorted_keys = sorted(self.number_data, 
                              key=lambda k: len(self.number_data[k]), 
                              reverse=True)
-        
+
         # 해당 키의 값 개수 구하기
         max_value_count = len(self.number_data[sorted_keys[0]])
-        second_max_value_count = len(self.number_data[sorted_keys[1]])
+        reduction_level = max_value_count - delta
 
-        reduced_data = total_values_count - total_values_count*vn
-        # print(reduced_data)
-        reduced = 0
-        
+        # print(vn)
+        # print(total_values_count * vn)
+        while int(total_values_count * vn) != (total_values_count - sum(reduction)):
+            for c in range(10):
+                num_data = len(self.number_data[c]) # 해당 라벨의 샘플 개수
+                if num_data - reduction_level >= 0:
+                    reduction[c] = num_data - reduction_level
+                else:
+                    reduction[c] = 0
+            reduction_level = reduction_level - delta
+
         for c in range(10):
-            num_data = len(self.number_data[c]) # 해당 라벨의 샘플 개수
-            if c == sorted_keys[0]:
-                reduced = num_data*vn - reduced_data*(9/10)
-                if reduced_data*(1/10) + second_max_value_count*vn > second_max_value_count:
-                    reduced+=reduced_data*(1/10) * 9
-                    reduced-= (second_max_value_count - (second_max_value_count*vn))*9
-            else:
-                reduced = num_data*vn + reduced_data*(1/10)
-
-            reduced = int(round(reduced,1))
-            # print(reduced)
-            # break
+            reduced = len(self.number_data[c]) - reduction[c]
             extract = self.number_data[c][:reduced]
-            # extract = self.number_data[c][:5]
             self.label_number.append(len(extract))
-            trainset.extend(extract)
-        # 초기화
-        # exit()
+        
+        trainset.extend(extract)
         self.set_data(trainset)
 
 

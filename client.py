@@ -100,9 +100,8 @@ class Client(object):
         for c in range(10):
             reduced = len(self.number_data[c]) - reduction[c]
             extract = self.number_data[c][:reduced]
-            self.label_number.append(len(extract))
-        
-        trainset.extend(extract)
+            self.label_number.append(len(extract))     
+            trainset.extend(extract)
         self.set_data(trainset)
 
 
